@@ -1,0 +1,9 @@
+{
+    "name": "serial.host",
+    "description": "serial host 64 bit: connects serial clients",
+    "version": "0.1.0",
+    "private": true,
+    "dependencies": {
+        "serialport": ">1.4.0"
+    }
+}
