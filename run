@@ -1,1 +1,1 @@
-node serial.sh
+node serial.host.sh
