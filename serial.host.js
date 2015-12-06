@@ -1,3 +1,4 @@
+/*jslint todo: true */
 var serial = {};
 serial.host = 
     {
@@ -5,7 +6,7 @@ serial.host =
     devices: [],
     serialport: require('serialport'),
     net: require('net'),
-    servername: 'media.muysers.nl',
+    servername: 'domotica.muysers.nl',
     serverport: 9999,
     server: undefined,
     init: function() {
@@ -55,6 +56,9 @@ serial.host =
     },
     checkPorts: function() {
         serial.host.serialport.list(function (err, ports) {
+            if (err) {
+                console.log("ERROR: "+err);
+            }
             var i, j, found;
             ports.forEach(function(port) {
                 //console.log("check port: " + port.comName);
@@ -66,6 +70,7 @@ serial.host =
                         if (data.substring(0,4)==='init'){
                             console.log('device found at: '+port.comName);
                             serial.host.devices[serial.host.devices.length] = new serial.host.Device(port.comName);
+                            console.log(serial.host.devices);
                             testport.close();
                             //TODO: this should time out
                         }
@@ -113,7 +118,6 @@ serial.host =
         this.comName = comName;
         this.port = new serial.host.serialport
         .SerialPort(comName, { parser: serial.host.serialport.parsers.readline("\n") });
-        this.port.on('data', serialData);
         function serialData(data) {
             console.log("device:" + data);
             var message = data.split(' ');
@@ -128,11 +132,15 @@ serial.host =
                 case 'event':
                     serial.host.server.write(message[0]+" "+that.name+" "+message[1]+" "+message[2]+"\n");
                 break;
+                case 'irevent':
+                    serial.host.server.write(message[0]+" "+that.name+" "+message[1]+" "+message[2]+"\n");
+                break;
                 default:
                     console.log("command not found: " + data);
                 break;
             }
         }
+        this.port.on('data', serialData);
     }
 };
 serial.host.init();
